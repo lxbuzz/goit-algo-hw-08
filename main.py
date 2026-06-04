@@ -1,5 +1,19 @@
+import pickle
 from address_book.record import Record
 from address_book.addressbook import AddressBook
+
+def save_data(book, filename="addressbook.pkl"):
+    """Зберігає дані адресної книги у файл."""
+    with open(filename, "wb") as f:
+        pickle.dump(book, f)
+
+def load_data(filename="addressbook.pkl"):
+    """Завантажує дані адресної книги з файлу. Якщо файл не знайдено, створює нову книгу."""
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return AddressBook()
 
 def input_error(func):
     def inner(*args, **kwargs):
@@ -98,7 +112,8 @@ def birthdays(args, book: AddressBook):
 
 
 def main():
-    book = AddressBook()
+    # Завантажуємо дані при старті програми
+    book = load_data()
     print("Welcome to the Birthday Assistant bot!")
     
     while True:
@@ -106,6 +121,8 @@ def main():
         command, args = parse_input(user_input)
 
         if command in ["close", "exit"]:
+            # Зберігаємо дані перед виходом
+            save_data(book)
             print("Good bye!")
             break
 
@@ -138,3 +155,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
